@@ -15,6 +15,11 @@ export default function DescriptionStep({ order, setScreen, editingFromSummary, 
   }
 
   function continueToAvailability() {
+    if (order.urgent !== true && order.urgent !== false) {
+      setError("Informe se o pedido é urgente.");
+      return;
+    }
+
     if (!order.description.trim()) {
       setError("Conte rapidamente o que precisa ser resolvido.");
       return;

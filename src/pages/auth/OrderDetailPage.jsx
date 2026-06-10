@@ -52,6 +52,16 @@ export default function OrderDetailPage({
   const codeInputRefs = useRef([]);
   const visibleProposal = isProfessional ? professionalProposal : clientProposal;
   const proposalCount = visibleProposal ? 1 : 0;
+  const descriptionLimit = 110;
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const fullDescription = mockedServiceOrder.description;
+  const shouldLimitDescription = fullDescription.length > descriptionLimit;
+
+  const visibleDescription =
+    showFullDescription || !shouldLimitDescription
+      ? fullDescription
+      : `${fullDescription.slice(0, descriptionLimit).trim()}...`;
 
   const mapaUrl = useMemo(() => {
     const { neighborhood, city, state } = mockedServiceOrder.location;
@@ -146,7 +156,7 @@ export default function OrderDetailPage({
       <div className="order-detail-fixed-header">
         <StepHeader
           className="order-detail-topbar"
-          title={isProfessional ? "Pedido #12345" : "Meus pedidos"}
+          title="Pedido #12345"
           showProgress={false}
           onBack={() => setScreen(isProfessional ? "professionalOrders" : "myOrders")}
         />
@@ -217,7 +227,7 @@ export default function OrderDetailPage({
               </figure>
               <div>
                 <strong>Serviço iniciado</strong>
-                <p>O serviço já está em andamento. Finalize somente após concluir o reparo da pia com o cliente.</p>
+                <p>O serviço já está em andamento. Finalize somente após concluir o serviço com o cliente.</p>
               </div>
               <button type="button" onClick={finishService}>
                 Finalizar serviço
@@ -270,8 +280,16 @@ export default function OrderDetailPage({
 
             <section className="client-description-box">
               <h2>Breve descrição do problema:</h2>
-              <p>{mockedServiceOrder.description}</p>
-              <button type="button">Ler mais</button>
+              <p>{visibleDescription}</p>
+
+              {shouldLimitDescription && (
+                <button
+                  type="button"
+                  onClick={() => setShowFullDescription((prev) => !prev)}
+                >
+                  {showFullDescription ? "Ler menos" : "Ler mais"}
+                </button>
+              )}
             </section>
 
             {!isProfessional && (

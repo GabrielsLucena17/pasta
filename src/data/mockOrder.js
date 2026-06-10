@@ -31,7 +31,7 @@ export const mockedServiceOrder = {
     initials: "YC",
   },
   professional: {
-    name: "Ytp Profissional",
+    name: "Ytn Profissional",
     initials: "YP",
     rating: "4.9",
     reviews: "(5)",

@@ -40,15 +40,22 @@ export default function MyOrdersPage({ order, setScreen }) {
         {activeTab === "open" && (
           <button className="order-list-card" type="button" onClick={() => setScreen("orderDetail")}>
             <img src={mockedServiceOrder.photos[0].src} alt={mockedServiceOrder.photos[0].alt} />
+
             <span className="order-list-content">
               <span className="order-list-top">
                 <small>{mockedServiceOrder.id}</small>
-                <em className={currentStatus === "Aguardando profissional" ? "is-waiting" : ""}>{currentStatus}</em>
+                <em className={currentStatus === "Aguardando profissional" ? "is-waiting" : ""}>
+                  {currentStatus}
+                </em>
               </span>
+
               <strong>{mockedServiceOrder.category}</strong>
-              <span className="order-list-meta">{mockedServiceOrder.shortProblem} • {mockedServiceOrder.createdAtShort}</span>
-              <span className="order-list-place">{mockedServiceOrder.location.display}</span>
+
+              <span className="order-list-place">
+                {mockedServiceOrder.location.display}
+              </span>
             </span>
+
             <span className="order-list-arrow">
               <Icon name="chevronRight" />
             </span>

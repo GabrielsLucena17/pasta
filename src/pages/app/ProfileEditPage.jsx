@@ -56,10 +56,6 @@ export default function ProfileEditPage({ auth, loginAudience, setScreen, update
         <FormField label="Telefone">
           <input inputMode="tel" value={values.phone} placeholder="Digite seu telefone" onChange={(event) => updateField("phone", event.target.value)} />
         </FormField>
-
-        <FormField label="Cidade">
-          <input value={values.city} placeholder="Cidade - UF" onChange={(event) => updateField("city", event.target.value)} />
-        </FormField>
       </section>
 
       <FixedAction>
