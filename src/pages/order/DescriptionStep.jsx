@@ -40,7 +40,7 @@ export default function DescriptionStep({ order, setScreen, editingFromSummary, 
               type="button"
               onClick={() => updateOrder({ urgent: true })}
             >
-              <Icon name="bell" />
+              <Icon name="check" />
               Sim
             </button>
             <button
@@ -48,7 +48,7 @@ export default function DescriptionStep({ order, setScreen, editingFromSummary, 
               type="button"
               onClick={() => updateOrder({ urgent: false })}
             >
-              <Icon name="clock" />
+              <Icon name="cancel" />
               Não
             </button>
           </div>

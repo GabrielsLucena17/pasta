@@ -2,6 +2,7 @@ import AppShell from "../../components/AppShell.jsx";
 import BottomNav from "../../components/BottomNav.jsx";
 import Icon from "../../components/Icon.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
+import { mockedServiceOrder } from "../../data/mockOrder.js";
 
 export default function PaymentPage({ setScreen, updateOrder }) {
   function confirmPayment() {
@@ -11,7 +12,7 @@ export default function PaymentPage({ setScreen, updateOrder }) {
 
   return (
     <AppShell className="step-shell payment-shell">
-      <StepHeader className="payment-topbar" title="Pré-Pagamento" showProgress={false} onBack={() => setScreen("proposalDetail")} />
+      <StepHeader className="payment-topbar" title="Pré-pagamento" showProgress={false} onBack={() => setScreen("proposalDetail")} />
 
       <section className="payment-step">
         <h1>Dados do cartão</h1>
@@ -45,7 +46,7 @@ export default function PaymentPage({ setScreen, updateOrder }) {
 
           <button className="payment-submit" type="button" onClick={confirmPayment}>
             <Icon name="lock" />
-            Pagar R$ 452,00
+            Pagar {mockedServiceOrder.proposal.price}
           </button>
         </section>
       </section>

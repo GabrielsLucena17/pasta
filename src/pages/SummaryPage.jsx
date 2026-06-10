@@ -56,7 +56,7 @@ export default function SummaryPage({ order, setScreen, setEditingFromSummary, s
         <p>Confira as informações antes de finalizar a solicitação.</p>
 
         <div className="summary-panel">
-          <SummaryItem label="Servico" onEdit={() => edit("categories")}>
+          <SummaryItem label="Serviço" onEdit={() => edit("categories")}>
             {order.category || "Nao selecionado"}
           </SummaryItem>
 
@@ -87,7 +87,7 @@ export default function SummaryPage({ order, setScreen, setEditingFromSummary, s
       </section>
 
       <FixedAction>
-        <PrimaryAction onClick={goToClientLogin}>Finalizar | Ver meus pedidos</PrimaryAction>
+        <PrimaryAction onClick={goToClientLogin}>Finalizar pedido</PrimaryAction>
       </FixedAction>
     </AppShell>
   );

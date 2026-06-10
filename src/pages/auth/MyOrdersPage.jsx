@@ -1,18 +1,9 @@
 import { useState } from "react";
-import plumberImage from "../../assets/img/ds-encanador.jpg";
 import AppShell from "../../components/AppShell.jsx";
 import BottomNav from "../../components/BottomNav.jsx";
 import Icon from "../../components/Icon.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
-
-const mockedOrder = {
-  id: "#12345",
-  service: "Encanador",
-  problem: "Cano quebrado na área de serviço",
-  date: "Hoje às 14:16",
-  city: "Jardim Satélite, São José dos Campos",
-  image: plumberImage,
-};
+import { mockedServiceOrder } from "../../data/mockOrder.js";
 
 const tabs = [
   { id: "open", label: "Em Aberto", count: 1 },
@@ -48,15 +39,15 @@ export default function MyOrdersPage({ order, setScreen }) {
 
         {activeTab === "open" && (
           <button className="order-list-card" type="button" onClick={() => setScreen("orderDetail")}>
-            <img src={mockedOrder.image} alt="Pedido de encanador" />
+            <img src={mockedServiceOrder.photos[0].src} alt={mockedServiceOrder.photos[0].alt} />
             <span className="order-list-content">
               <span className="order-list-top">
-                <small>{mockedOrder.id}</small>
+                <small>{mockedServiceOrder.id}</small>
                 <em className={currentStatus === "Aguardando profissional" ? "is-waiting" : ""}>{currentStatus}</em>
               </span>
-              <strong>{mockedOrder.problem}</strong>
-              <span className="order-list-meta">{mockedOrder.service} • {mockedOrder.date}</span>
-              <span className="order-list-place">{mockedOrder.city}</span>
+              <strong>{mockedServiceOrder.category}</strong>
+              <span className="order-list-meta">{mockedServiceOrder.shortProblem} • {mockedServiceOrder.createdAtShort}</span>
+              <span className="order-list-place">{mockedServiceOrder.location.display}</span>
             </span>
             <span className="order-list-arrow">
               <Icon name="chevronRight" />
@@ -66,14 +57,14 @@ export default function MyOrdersPage({ order, setScreen }) {
 
         {activeTab === "done" && (
           <div className="empty-orders">
-            <strong>Nenhum pedido concluído para mostrar agora.</strong>
-            <p>Quando um atendimento for finalizado, ele aparecerá aqui.</p>
+            <strong>Nenhum pedido concluído para mostrar agora</strong>
+            <p>Quando um serviço for finalizado, ele aparecerá aqui.</p>
           </div>
         )}
 
         {activeTab === "canceled" && (
           <div className="empty-orders">
-            <strong>Nenhum pedido cancelado.</strong>
+            <strong>Nenhum pedido cancelado</strong>
             <p>Pedidos cancelados ficam registrados nesta aba.</p>
           </div>
         )}

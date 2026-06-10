@@ -7,7 +7,7 @@ import PrimaryAction from "../../components/PrimaryAction.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
 import { fetchAddressByCep, formatCep } from "../../utils/cep.js";
 
-export default function AddressStep({ order, setScreen, editingFromSummary, setEditingFromSummary, updateOrder }) {
+export default function AddressStep({ order, setScreen, setEditingFromSummary, updateOrder }) {
   const [cep, setCep] = useState(order.address?.cep || "");
   const [address, setAddress] = useState(order.address);
   const [isSearching, setIsSearching] = useState(false);
@@ -74,8 +74,8 @@ export default function AddressStep({ order, setScreen, editingFromSummary, setE
         <h1>Onde o serviço será realizado?</h1>
         <p>Informe o local para encontrarmos profissionais disponíveis na sua região.</p>
 
-        <FormField label="Digite seu Cep">
-          <input type="text" inputMode="numeric" maxLength={9} placeholder="Digite seu Cep" value={cep} onChange={handleCepChange} />
+        <FormField label="Digite seu CEP">
+          <input type="text" inputMode="numeric" maxLength={9} placeholder="Digite seu CEP" value={cep} onChange={handleCepChange} />
         </FormField>
         {cepError && <p className="field-error">{cepError}</p>}
 

@@ -1,17 +1,17 @@
 import { useState } from "react";
 import AppShell from "../../components/AppShell.jsx";
 import BottomNav from "../../components/BottomNav.jsx";
+import FixedAction from "../../components/FixedAction.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
 import Icon from "../../components/Icon.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
-import professionalImage from "../../assets/img/ds-eletricista.jpg";
+import { mockedServiceOrder } from "../../data/mockOrder.js";
 
 const clientProposal = {
-  startDate: "2026-05-17",
-  deadline: "2026-05-19",
-  price: "R$ 452,00",
-  detail:
-    "O valor inclui deslocamento, avaliação do ponto elétrico, desmontagem da tomada, correção da fiação danificada e testes finais.",
+  startDate: mockedServiceOrder.proposal.startDate,
+  deadline: mockedServiceOrder.proposal.deadline,
+  price: mockedServiceOrder.proposal.price,
+  detail: mockedServiceOrder.proposal.detail,
 };
 
 const emptyProfessionalProposal = {
@@ -45,12 +45,12 @@ export default function ProposalDetailPage({
   function handleSaveProposal() {
     setProfessionalProposal({
       ...form,
-      professional: "Ytp Profissional",
-      rating: "4.9",
-      reviews: "(5)",
-      bio: "Profissional especializado em instalações residenciais",
-      services: "Instalações, reparos e manutenções",
-      image: professionalImage,
+      professional: mockedServiceOrder.professional.name,
+      rating: mockedServiceOrder.professional.rating,
+      reviews: mockedServiceOrder.professional.reviews,
+      bio: mockedServiceOrder.professional.bio,
+      services: mockedServiceOrder.professional.services,
+      image: mockedServiceOrder.professional.image,
     });
     setOrderDetailInitialTab?.("proposals");
     setScreen("orderDetail");
@@ -67,7 +67,7 @@ export default function ProposalDetailPage({
 
       <section className="proposal-detail-step">
         <label className="proposal-read-field">
-          <span>Data de Início <strong>*</strong></span>
+          <span>Data de início <strong>*</strong></span>
           <div className="proposal-date-input">
             <input
               type="date"
@@ -99,7 +99,7 @@ export default function ProposalDetailPage({
             value={form.price}
             readOnly={!isProfessional}
             onChange={(event) => handleChange("price", event.target.value)}
-            placeholder="Ex: R$ 452,00"
+            placeholder="Ex: R$ 380,00"
           />
         </label>
 
@@ -115,17 +115,10 @@ export default function ProposalDetailPage({
           <small>{form.detail.length}/300</small>
         </label>
 
-        {isProfessional ? (
-          <div className="proposal-actions">
-            <button className="accept" type="button" onClick={handleSaveProposal}>
-              {isEditing ? "Salvar alterações" : "Criar proposta"}
-              <Icon name="chevronRight" />
-            </button>
-          </div>
-        ) : (
+        {!isProfessional && (
           <div className="proposal-actions">
             <button className="accept" type="button" onClick={() => setScreen("payment")}>
-              Aceitar Proposta
+              Aceitar proposta
               <Icon name="chevronRight" />
             </button>
 
@@ -135,7 +128,7 @@ export default function ProposalDetailPage({
             </button>
 
             <button className="reject" type="button" onClick={() => setScreen("orderDetail")}>
-              Recusar Proposta
+              Recusar proposta
               <Icon name="chevronRight" />
             </button>
           </div>
@@ -143,7 +136,14 @@ export default function ProposalDetailPage({
       </section>
 
       {isProfessional ? (
-        <ProfessionalBottomNav active="professionalOrders" setScreen={setScreen} />
+        <>
+          <FixedAction className="proposal-fixed-action">
+            <button className="primary-action" type="button" onClick={handleSaveProposal}>
+              {isEditing ? "Salvar alterações" : "Criar proposta"}
+            </button>
+          </FixedAction>
+          <ProfessionalBottomNav active="professionalOrders" setScreen={setScreen} />
+        </>
       ) : (
         <BottomNav active="myOrders" setScreen={setScreen} />
       )}

@@ -2,16 +2,36 @@ import { useState } from "react";
 import AppShell from "../../components/AppShell.jsx";
 import Icon from "../../components/Icon.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
-import repairImage from "../../assets/img/ds-torneira.jpg";
+import { mockedServiceOrder } from "../../data/mockOrder.js";
 
 const tabs = [
   { id: "available", label: "Disponíveis", count: 1 },
-  { id: "progress", label: "Em andamento", count: 0 },
+  { id: "progress", label: "Em andamento", count: 1 },
   { id: "finished", label: "Finalizados", count: 0 },
 ];
 
-export default function ProfessionalOrdersPage({ setScreen }) {
+export default function ProfessionalOrdersPage({ setOrderDetailInitialTab, setScreen, updateOrder }) {
   const [activeTab, setActiveTab] = useState("available");
+
+  function openAvailableOrder() {
+    updateOrder({
+      category: mockedServiceOrder.category,
+      urgent: mockedServiceOrder.urgent,
+      status: "Aguardando propostas",
+    });
+    setOrderDetailInitialTab("details");
+    setScreen("orderDetail");
+  }
+
+  function openProgressOrder() {
+    updateOrder({
+      category: mockedServiceOrder.category,
+      urgent: mockedServiceOrder.urgent,
+      status: "Aguardando código de início",
+    });
+    setOrderDetailInitialTab("details");
+    setScreen("orderDetail");
+  }
 
   return (
     <AppShell className="professional-orders-shell">
@@ -36,22 +56,27 @@ export default function ProfessionalOrdersPage({ setScreen }) {
 
       <section className="professional-orders-list">
         {activeTab === "available" && (
-          <button className="professional-order-card" type="button" onClick={() => setScreen("orderDetail")}>
-            <img src={repairImage} alt="Cano quebrado em banheiro" />
+          <button className="professional-order-card" type="button" onClick={openAvailableOrder}>
+            <img src={mockedServiceOrder.photos[0].src} alt={mockedServiceOrder.photos[0].alt} />
             <span>
               <small>Novo pedido</small>
-              <strong>Conserto de cano quebrado</strong>
-              <em>Jardim Satélite - São José dos Campos</em>
+              <strong>{mockedServiceOrder.category}</strong>
+              <em>{mockedServiceOrder.shortProblem} • {mockedServiceOrder.location.display}</em>
             </span>
             <Icon name="arrowRight" />
           </button>
         )}
 
         {activeTab === "progress" && (
-          <div className="professional-empty-orders">
-            <strong>Nenhum pedido em andamento.</strong>
-            <p>Quando uma proposta for aceita, o pedido aparecerá aqui.</p>
-          </div>
+          <button className="professional-order-card is-progress" type="button" onClick={openProgressOrder}>
+            <img src={mockedServiceOrder.photos[1].src} alt={mockedServiceOrder.photos[1].alt} />
+            <span>
+              <small>Aguardando código</small>
+              <strong>{mockedServiceOrder.category}</strong>
+              <em>{mockedServiceOrder.shortProblem} • {mockedServiceOrder.location.display}</em>
+            </span>
+            <Icon name="arrowRight" />
+          </button>
         )}
 
         {activeTab === "finished" && (

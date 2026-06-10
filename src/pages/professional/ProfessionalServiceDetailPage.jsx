@@ -10,8 +10,8 @@ import StepHeader from "../../components/StepHeader.jsx";
 
 const gallery = [
   { src: serviceImage, alt: "Assentamento de piso em area residencial" },
-  { src: serviceImageTwo, alt: "Acabamento de servico residencial" },
-  { src: serviceImageThree, alt: "Detalhe de servico realizado" },
+  { src: serviceImageTwo, alt: "Acabamento de Serviço residencial" },
+  { src: serviceImageThree, alt: "Detalhe de Serviço realizado" },
 ];
 
 export default function ProfessionalServiceDetailPage({ loginAudience, setScreen }) {
@@ -57,7 +57,7 @@ export default function ProfessionalServiceDetailPage({ loginAudience, setScreen
       <div className="professional-service-fixed-header">
         <StepHeader
           className="professional-service-detail-topbar"
-          title="Servico"
+          title="Serviço"
           showProgress={false}
           onBack={() => setScreen("professionalProfile")}
         />
@@ -92,16 +92,11 @@ export default function ProfessionalServiceDetailPage({ loginAudience, setScreen
             </span>
             <div className="service-summary-tags">
               <span><Icon name="pin" />Sao Jose dos Campos, SP</span>
-              <span><Icon name="wrench" />Servico realizado</span>
             </div>
-            <span className="service-created-meta">
-              <Icon name="pin" />
-              Vila Tesouro
-            </span>
           </header>
 
           <section className="service-description-box">
-            <h2>Descricao do servico</h2>
+            <h2>Descricao do Serviço</h2>
             <p>
               Assentamento de piso em area residencial, incluindo preparacao da superficie,
               nivelamento, aplicacao de argamassa, paginacao das pecas, instalacao do revestimento
@@ -117,7 +112,7 @@ export default function ProfessionalServiceDetailPage({ loginAudience, setScreen
             <iframe
               className="service-detail-map"
               src={mapUrl}
-              title="Mapa da regiao do servico"
+              title="Mapa da regiao do Serviço"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />

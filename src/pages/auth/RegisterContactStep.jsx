@@ -14,8 +14,9 @@ function formatCpf(value) {
   return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
 }
 
-export default function RegisterContactStep({ auth, setScreen, updateAuth }) {
+export default function RegisterContactStep({ auth, loginAudience, setScreen, updateAuth }) {
   const [error, setError] = useState("");
+  const totalSteps = loginAudience === "professional" ? 4 : 3;
 
   function continueToProfile() {
     if ((auth.cpf || "").replace(/\D/g, "").length !== 11) {
@@ -29,7 +30,7 @@ export default function RegisterContactStep({ auth, setScreen, updateAuth }) {
 
   return (
     <AppShell className="step-shell auth-shell">
-      <StepHeader className="auth-topbar" step={1} onBack={() => setScreen("login")} />
+      <StepHeader className="auth-topbar" step={1} totalSteps={totalSteps} onBack={() => setScreen("login")} />
 
       <section className="auth-step compact-auth-step">
         <h1>Nova Conta</h1>

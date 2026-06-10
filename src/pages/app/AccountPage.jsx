@@ -33,6 +33,7 @@ export default function AccountPage({ auth, order, setScreen }) {
       </section>
 
       <section className="account-menu" aria-label="Minha conta">
+        <h2>Perfil</h2>
         {primaryItems.map((item) => (
           <button className="account-menu-item" type="button" key={item.label} onClick={() => setScreen(item.target)}>
             <span><Icon name={item.icon} />{item.label}</span>

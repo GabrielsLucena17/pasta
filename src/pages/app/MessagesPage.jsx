@@ -3,31 +3,7 @@ import AppShell from "../../components/AppShell.jsx";
 import BottomNav from "../../components/BottomNav.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
-
-const conversations = {
-  recent: [
-    {
-      id: "15450AD4121S",
-      initials: "JS",
-      name: "Júlio Silva",
-      time: "10:15",
-      title: "Olá Júlio, tudo bem?",
-      preview: "Gostaria de confirmar o prazo do serviço.",
-      unread: 1,
-    },
-  ],
-  finished: [
-    {
-      id: "18340BC9910",
-      initials: "MS",
-      name: "Marcos Santana",
-      time: "Ontem",
-      title: "Atendimento finalizado",
-      preview: "Obrigado pela confirmação. Serviço concluído.",
-      unread: 0,
-    },
-  ],
-};
+import { mockedServiceOrder } from "../../data/mockOrder.js";
 
 const tabs = [
   { id: "recent", label: "Recentes" },
@@ -37,6 +13,35 @@ const tabs = [
 export default function MessagesPage({ loginAudience, setScreen }) {
   const isProfessional = loginAudience === "professional";
   const [activeTab, setActiveTab] = useState("recent");
+  const contact = isProfessional ? mockedServiceOrder.client : mockedServiceOrder.professional;
+
+  const conversations = {
+    recent: [
+      {
+        id: mockedServiceOrder.code,
+        initials: contact.initials,
+        name: contact.name,
+        time: "18:21",
+        title: mockedServiceOrder.shortProblem,
+        preview: isProfessional
+          ? "Perfeito, pode manter a proposta. Vou seguir com a confirmação."
+          : "Inclui sim. Se precisar trocar alguma peça maior, eu aviso antes.",
+        unread: 1,
+      },
+    ],
+    finished: [
+      {
+        id: "18340BC9910",
+        initials: "MS",
+        name: "Marcos Santana",
+        time: "Ontem",
+        title: "Atendimento finalizado",
+        preview: "Obrigado pela confirmação. Serviço concluído.",
+        unread: 0,
+      },
+    ],
+  };
+
   const activeConversations = conversations[activeTab];
 
   return (

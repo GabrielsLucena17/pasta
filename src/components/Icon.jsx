@@ -33,6 +33,7 @@ const icons = {
   send: "material-symbols:send-rounded",
   search: "material-symbols:search-rounded",
   visibility: "material-symbols:visibility-outline-rounded",
+  visibilityOff: "material-symbols:visibility-off-outline-rounded",
   wrench: "material-symbols:build-outline-rounded",
   sun: "material-symbols:wb-sunny-outline-rounded",
   sync: "material-symbols:history-rounded",

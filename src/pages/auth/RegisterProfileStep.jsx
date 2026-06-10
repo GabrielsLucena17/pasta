@@ -13,8 +13,9 @@ function formatBirthDate(value) {
   return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
 }
 
-export default function RegisterProfileStep({ auth, setScreen, updateAuth }) {
+export default function RegisterProfileStep({ auth, loginAudience, setScreen, updateAuth }) {
   const [error, setError] = useState("");
+  const totalSteps = loginAudience === "professional" ? 4 : 3;
 
   function continueToAccess() {
     if (!auth.fullName.trim() || auth.birthDate.replace(/\D/g, "").length !== 8) {
@@ -28,7 +29,7 @@ export default function RegisterProfileStep({ auth, setScreen, updateAuth }) {
 
   return (
     <AppShell className="step-shell auth-shell">
-      <StepHeader className="auth-topbar" step={2} onBack={() => setScreen("registerContact")} />
+      <StepHeader className="auth-topbar" step={2} totalSteps={totalSteps} onBack={() => setScreen("registerContact")} />
 
       <section className="auth-step compact-auth-step">
         <h1>Nova Conta</h1>

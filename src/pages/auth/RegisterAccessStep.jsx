@@ -3,6 +3,7 @@ import AppShell from "../../components/AppShell.jsx";
 import FixedAction from "../../components/FixedAction.jsx";
 import FormField from "../../components/FormField.jsx";
 import Icon from "../../components/Icon.jsx";
+import PasswordInput from "../../components/PasswordInput.jsx";
 import PrimaryAction from "../../components/PrimaryAction.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
 
@@ -11,26 +12,28 @@ const passwordRules = [
   { label: "Uma letra maiúscula", test: (value) => /[A-Z]/.test(value) },
   { label: "Uma letra minúscula", test: (value) => /[a-z]/.test(value) },
   { label: "Um número", test: (value) => /\d/.test(value) },
-  { label: "Um caracter especial (!@#$%*=)", test: (value) => /[!@#$%*=]/.test(value) },
+  { label: "Um caractere especial (!@#$%*=)", test: (value) => /[!@#$%*=]/.test(value) },
 ];
 
 export default function RegisterAccessStep({ auth, loginAudience, setScreen, updateAuth }) {
   const [error, setError] = useState("");
   const passwordValid = passwordRules.every((rule) => rule.test(auth.password));
+  const isProfessional = loginAudience === "professional";
+  const totalSteps = isProfessional ? 4 : 3;
 
   function finishRegister() {
     if (!auth.email.trim() || !passwordValid) {
-      setError("Informe um email válido e uma senha que atenda aos requisitos.");
+      setError("Informe um e-mail válido e uma senha que atenda aos requisitos.");
       return;
     }
 
     setError("");
-    setScreen(loginAudience === "professional" ? "professionalAccount" : "loggedHome");
+    setScreen(isProfessional ? "registerDocuments" : "loggedHome");
   }
 
   return (
     <AppShell className="step-shell auth-shell auth-access-shell">
-      <StepHeader className="auth-topbar" step={3} onBack={() => setScreen("registerProfile")} />
+      <StepHeader className="auth-topbar" step={3} totalSteps={totalSteps} onBack={() => setScreen("registerProfile")} />
 
       <section className="auth-step">
         <h1>Nova Conta</h1>
@@ -51,8 +54,7 @@ export default function RegisterAccessStep({ auth, loginAudience, setScreen, upd
         </FormField>
 
         <FormField label="Senha">
-          <input
-            type="password"
+          <PasswordInput
             placeholder="Digite uma senha forte"
             value={auth.password}
             onChange={(event) => {

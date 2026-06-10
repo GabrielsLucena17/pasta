@@ -32,11 +32,11 @@ export default function ProfessionalProfilePage({ loginAudience, setScreen }) {
         onBack={() => setScreen(isProfessional ? "professionalAccount" : "orderDetail")}
       />
 
-      <section className="professional-cover" style={{ backgroundImage: `url(${coverImage})` }}>
+      <section className="professional-account-cover professional-public-cover" style={{ backgroundImage: `url(${coverImage})` }}>
         <img src={professionalImage} alt="Ytp Profissional" />
       </section>
 
-      <section className="professional-profile">
+      <section className="professional-account-profile professional-public-profile">
         <h1>Ytp Profissional</h1>
         <p><strong>4.6</strong> (5 avaliações)</p>
         <span>Encanador e marido de aluguel</span>
@@ -61,7 +61,7 @@ export default function ProfessionalProfilePage({ loginAudience, setScreen }) {
 
       <section className="professional-section">
         <h2>Sobre mim</h2>
-        <p>Profissional especializado em instalações residenciais, reparos e manutenções.</p>
+        <p>Profissional especializado em instalações residenciais, reparos hidráulicos e manutenções.</p>
       </section>
 
       <section className="professional-section">

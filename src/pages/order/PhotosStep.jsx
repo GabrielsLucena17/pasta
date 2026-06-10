@@ -47,7 +47,7 @@ export default function PhotosStep({ order, setScreen, editingFromSummary, setEd
       <StepHeader className="photo-topbar" step={2} onBack={() => setScreen("categories")} />
 
       <section className="photo-step">
-        <h1>Mostre o problema com fotos.</h1>
+        <h1>Mostre o problema com fotos</h1>
         <p>Fotos ajudam os profissionais a entenderem melhor o que precisa ser feito.</p>
 
         <div className="photo-grid" aria-label="Fotos do problema">

@@ -1,35 +1,30 @@
 import { useMemo, useRef, useState } from "react";
-import repairImage from "../../assets/img/ds-marido-aluguel.jpg";
-import repairImageTwo from "../../assets/img/ds-torneira.jpg";
-import repairImageThree from "../../assets/img/order-repair.jpg";
-import professionalImage from "../../assets/img/ds-eletricista.jpg";
 import AppShell from "../../components/AppShell.jsx";
+import BrandLogo from "../../components/BrandLogo.jsx";
 import BottomNav from "../../components/BottomNav.jsx";
 import Icon from "../../components/Icon.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
+import { mockedServiceOrder } from "../../data/mockOrder.js";
 
-const bairro = "Vila Tesouro";
-const cidade = "São José dos Campos";
-const estado = "SP";
-
-const gallery = [
-  { src: repairImageThree, alt: "Área com problema para reparo" },
-  { src: repairImageTwo, alt: "Torneira com vazamento" },
-  { src: repairImage, alt: "Reparo residencial" },
-];
+const gallery = mockedServiceOrder.photos;
 
 const clientProposal = {
-  professional: "Ytp Profissional",
-  rating: "4.9",
-  reviews: "(5)",
-  bio: "Profissional especializado em instalações residenciais",
-  services: "Instalações, reparos e manutenções",
-  price: "R$ 452,00",
-  deadline: "Em até 2 dias",
-  startDate: "17/05/2026",
-  image: professionalImage,
+  professional: mockedServiceOrder.professional.name,
+  rating: mockedServiceOrder.professional.rating,
+  reviews: mockedServiceOrder.professional.reviews,
+  bio: mockedServiceOrder.professional.bio,
+  services: mockedServiceOrder.professional.services,
+  price: mockedServiceOrder.proposal.price,
+  deadline: mockedServiceOrder.proposal.deadlineLabel,
+  startDate: mockedServiceOrder.proposal.startDate,
+  image: mockedServiceOrder.professional.image,
 };
+
+function isStartCodeStatus(status) {
+  const key = status.toLowerCase();
+  return key.includes("codigo") || key.includes("código");
+}
 
 export default function OrderDetailPage({
   loginAudience,
@@ -38,24 +33,36 @@ export default function OrderDetailPage({
   professionalProposal,
   setOrderDetailInitialTab,
   setScreen,
+  updateOrder,
 }) {
   const isProfessional = loginAudience === "professional";
-  const [activeTab, setActiveTab] = useState(isProfessional ? orderDetailInitialTab : "details");
-  const [activePhoto, setActivePhoto] = useState(0);
-  const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const currentStatus = order?.status || "Aguardando propostas";
+  const currentStatusKey = currentStatus.toLowerCase();
+  const needsStartCode = isProfessional && isStartCodeStatus(currentStatus);
+  const serviceStarted = isProfessional && (
+    currentStatusKey.includes("iniciado") ||
+    currentStatusKey.includes("andamento")
+  );
+  const acceptedService = isProfessional && (needsStartCode || serviceStarted || currentStatusKey.includes("finalizado"));
+  const [activeTab, setActiveTab] = useState(acceptedService ? "details" : isProfessional ? orderDetailInitialTab : "details");
+  const [activePhoto, setActivePhoto] = useState(0);
+  const [startCode, setStartCode] = useState("");
+  const [startCodeError, setStartCodeError] = useState("");
+  const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
+  const codeInputRefs = useRef([]);
   const visibleProposal = isProfessional ? professionalProposal : clientProposal;
   const proposalCount = visibleProposal ? 1 : 0;
 
-  function formatDateTime(value) {
-    if (!value) {
-      return "";
-    }
+  const mapaUrl = useMemo(() => {
+    const { neighborhood, city, state } = mockedServiceOrder.location;
+    const regiao = `${neighborhood}, ${city} - ${state}, Brasil`;
+    return `https://www.google.com/maps?q=${encodeURIComponent(regiao)}&output=embed`;
+  }, []);
 
+  function formatDateTime(value) {
+    if (!value) return "";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return value;
-    }
+    if (Number.isNaN(date.getTime())) return value;
 
     return new Intl.DateTimeFormat("pt-BR", {
       day: "2-digit",
@@ -65,11 +72,6 @@ export default function OrderDetailPage({
       minute: "2-digit",
     }).format(date);
   }
-
-  const mapaUrl = useMemo(() => {
-    const regiao = `${bairro}, ${cidade} - ${estado}, Brasil`;
-    return `https://www.google.com/maps?q=${encodeURIComponent(regiao)}&output=embed`;
-  }, []);
 
   function changeTab(nextTab) {
     setActiveTab(nextTab);
@@ -96,10 +98,7 @@ export default function OrderDetailPage({
   }
 
   function handleDragMove(event) {
-    if (!dragState.current.isDragging) {
-      return;
-    }
-
+    if (!dragState.current.isDragging) return;
     const distance = event.clientX - dragState.current.startX;
     event.currentTarget.scrollLeft = dragState.current.scrollLeft - distance;
   }
@@ -107,6 +106,39 @@ export default function OrderDetailPage({
   function handleDragEnd(event) {
     dragState.current.isDragging = false;
     event.currentTarget.releasePointerCapture?.(event.pointerId);
+  }
+
+  function updateStartCodeDigit(index, value) {
+    const digit = value.replace(/\D/g, "").slice(-1);
+    const nextCode = startCode.padEnd(5, " ").split("");
+    nextCode[index] = digit || " ";
+
+    setStartCodeError("");
+    setStartCode(nextCode.join("").trimEnd());
+
+    if (digit && index < 4) {
+      codeInputRefs.current[index + 1]?.focus();
+    }
+  }
+
+  function handleStartCodeKeyDown(index, event) {
+    if (event.key === "Backspace" && !startCode[index] && index > 0) {
+      codeInputRefs.current[index - 1]?.focus();
+    }
+  }
+
+  function confirmStartCode() {
+    if (startCode.trim().length !== 5) {
+      setStartCodeError("Digite o código de 5 dígitos informado pelo cliente.");
+      return;
+    }
+
+    setStartCodeError("");
+    updateOrder?.({ status: "Serviço iniciado" });
+  }
+
+  function finishService() {
+    updateOrder?.({ status: "Serviço finalizado" });
   }
 
   return (
@@ -119,18 +151,80 @@ export default function OrderDetailPage({
           onBack={() => setScreen(isProfessional ? "professionalOrders" : "myOrders")}
         />
 
-        <div className="order-detail-tabs" role="tablist" aria-label="Detalhes do pedido">
+        <div className={`order-detail-tabs ${acceptedService ? "single-tab" : ""}`} role="tablist" aria-label="Detalhes do pedido">
           <button className={activeTab === "details" ? "is-active" : ""} type="button" onClick={() => changeTab("details")}>
             Detalhes
           </button>
-          <button className={activeTab === "proposals" ? "is-active" : ""} type="button" onClick={() => changeTab("proposals")}>
-            {isProfessional ? `Minhas Propostas (${proposalCount})` : `Propostas (${proposalCount})`}
-          </button>
+          {!acceptedService && (
+            <button className={activeTab === "proposals" ? "is-active" : ""} type="button" onClick={() => changeTab("proposals")}>
+              {isProfessional ? `Minhas Propostas (${proposalCount})` : `Propostas (${proposalCount})`}
+            </button>
+          )}
         </div>
       </div>
 
       {activeTab === "details" && (
         <section className="client-order-detail">
+          {needsStartCode && (
+            <section className="professional-start-code professional-start-code-top">
+              <div className="verification-illustration" aria-hidden="true">
+                <span className="verification-card">
+                  <Icon name="message" />
+                </span>
+                <span className="verification-person">
+                  <Icon name="user" />
+                </span>
+                <i />
+              </div>
+
+              <header>
+                <h2>Informe o código</h2>
+                <p>Peça ao cliente o código de 5 dígitos para iniciar o serviço.</p>
+              </header>
+
+              <span className="start-code-label">Código de início</span>
+
+              <div className="start-code-boxes" aria-label="Código de início do serviço">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <input
+                    aria-label={`Dígito ${index + 1} do código`}
+                    inputMode="numeric"
+                    key={index}
+                    maxLength={1}
+                    autoFocus={index === 0}
+                    ref={(element) => {
+                      codeInputRefs.current[index] = element;
+                    }}
+                    value={startCode[index]?.trim() || ""}
+                    onChange={(event) => updateStartCodeDigit(index, event.target.value)}
+                    onKeyDown={(event) => handleStartCodeKeyDown(index, event)}
+                  />
+                ))}
+              </div>
+
+              {startCodeError && <p className="field-error">{startCodeError}</p>}
+
+              <button type="button" onClick={confirmStartCode}>
+                Iniciar serviço
+              </button>
+            </section>
+          )}
+
+          {serviceStarted && (
+            <section className="professional-service-started">
+              <figure>
+                <BrandLogo className="service-started-logo" />
+              </figure>
+              <div>
+                <strong>Serviço iniciado</strong>
+                <p>O serviço já está em andamento. Finalize somente após concluir o reparo da pia com o cliente.</p>
+              </div>
+              <button type="button" onClick={finishService}>
+                Finalizar serviço
+              </button>
+            </section>
+          )}
+
           <div className="client-order-media">
             <div
               className="client-order-carousel"
@@ -153,14 +247,14 @@ export default function OrderDetailPage({
 
           <article className="client-order-card">
             <div className="client-order-head compact">
-              <h1>Marido de Aluguel</h1>
+              <h1>{mockedServiceOrder.category}</h1>
               <span className="client-created-meta">
                 <Icon name="clock" />
-                Publicado há 15 min
+                {mockedServiceOrder.createdAt}
               </span>
               <div className="client-summary-tags">
-                <span><Icon name="pin" />São José dos Campos, SP</span>
-                <span className="is-urgent"><Icon name="bell" />Urgente</span>
+                <span><Icon name="pin" />{mockedServiceOrder.location.short}</span>
+                {(order?.urgent ?? mockedServiceOrder.urgent) && <span className="is-urgent"><Icon name="bell" />Urgente</span>}
               </div>
             </div>
 
@@ -169,17 +263,14 @@ export default function OrderDetailPage({
                 <Icon name="hourglass" />
                 <span>
                   <strong>{currentStatus}</strong>
-                  <small>Profissionais da região podem enviar propostas.</small>
+                  <small>{acceptedService ? "A proposta foi aceita. Confirme o código com o cliente para iniciar." : "Profissionais da região podem enviar propostas."}</small>
                 </span>
               </span>
             </div>
 
             <section className="client-description-box">
               <h2>Breve descrição do problema:</h2>
-              <p>
-                A tomada da sala parou de funcionar. Ao verificar, notei que a fiação interna pode estar solta.
-                Preciso que um profissional verifique e faça o reparo. Possíveis peças de reposição.
-              </p>
+              <p>{mockedServiceOrder.description}</p>
               <button type="button">Ler mais</button>
             </section>
 
@@ -196,7 +287,7 @@ export default function OrderDetailPage({
             <section className="client-map-section">
               <header>
                 <span>Região aproximada do serviço</span>
-                <strong>Vila Tesouro - São José dos Campos, SP</strong>
+                <strong>{mockedServiceOrder.location.display}</strong>
               </header>
               <iframe
                 className="client-order-map"
@@ -248,12 +339,12 @@ export default function OrderDetailPage({
         </section>
       )}
 
-      {activeTab === "proposals" && (
+      {!acceptedService && activeTab === "proposals" && (
         <section className="order-detail-content proposal-content">
           {!visibleProposal ? (
             <div>
               <strong>Você ainda não enviou proposta para este pedido.</strong>
-              <p>Crie uma proposta com valor, prazo e detalhes do atendimento.</p>
+              <p>Crie uma proposta com valor, prazo e detalhes do serviço.</p>
             </div>
           ) : (
             <article className="proposal-card">
@@ -283,13 +374,13 @@ export default function OrderDetailPage({
                   <dd>{formatDateTime(visibleProposal.deadline)}</dd>
                 </div>
                 <div>
-                  <dt>Data de Início</dt>
+                  <dt>Data de início</dt>
                   <dd>{formatDateTime(visibleProposal.startDate)}</dd>
                 </div>
               </dl>
 
               <button className="proposal-detail-link" type="button" onClick={isProfessional ? openProposalEditor : () => setScreen("proposalDetail")}>
-                {isProfessional ? "Editar proposta" : "Ver Detalhes"}
+                {isProfessional ? "Editar proposta" : "Ver detalhes"}
                 <Icon name="chevronRight" />
               </button>
             </article>
@@ -299,10 +390,12 @@ export default function OrderDetailPage({
 
       {isProfessional ? (
         <>
-          <button className="create-proposal-floating" type="button" onClick={openProposalEditor}>
-            <Icon name="edit" />
-            {professionalProposal ? "Editar proposta" : "Criar nova proposta"}
-          </button>
+          {!acceptedService && (
+            <button className="create-proposal-floating" type="button" onClick={openProposalEditor}>
+              <Icon name="edit" />
+              {professionalProposal ? "Editar proposta" : "Criar nova proposta"}
+            </button>
+          )}
           <ProfessionalBottomNav active="professionalOrders" setScreen={setScreen} />
         </>
       ) : (

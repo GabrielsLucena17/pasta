@@ -1,9 +1,9 @@
 import { useState } from "react";
 import AppShell from "../components/AppShell.jsx";
+import BrandLogo from "../components/BrandLogo.jsx";
 import Icon from "../components/Icon.jsx";
-import bonifacilLogo from "../assets/img/bonifacil_logo.png";
 import heroImage from "../assets/img/ds-higienizacao-sofa.jpg";
-import { popularServices } from "../data/services.js";
+import { popularServices, serviceImages } from "../data/services.js";
 
 const menuItems = [
   { label: "Home", action: "home" },
@@ -12,6 +12,47 @@ const menuItems = [
   { label: "Área do Cliente", action: "clientLogin" },
   { label: "Blog", action: "home" },
   { label: "Contato", action: "home" },
+];
+
+const homeSections = [
+  {
+    title: "Serviços Populares",
+    items: popularServices,
+  },
+  {
+    title: "Marido de Aluguel",
+    items: [
+      {
+        id: "luminaria",
+        name: "Instalação de luminária",
+        image: serviceImages.home,
+        alt: "Instalação de luminária",
+      },
+      {
+        id: "maquina-lavar",
+        name: "Instalação de Máq. de lavar louça",
+        image: serviceImages.handyman,
+        alt: "Instalação de máquina de lavar louça",
+      },
+    ],
+  },
+  {
+    title: "Melhoria da Casa",
+    items: [
+      {
+        id: "pintor",
+        name: "Pintor",
+        image: serviceImages.plaster,
+        alt: "Pintor trabalhando",
+      },
+      {
+        id: "eletricista-melhoria",
+        name: "Eletricista",
+        image: serviceImages.electrician,
+        alt: "Eletricista trabalhando",
+      },
+    ],
+  },
 ];
 
 export default function Home({ setScreen, setLoginAudience }) {
@@ -39,7 +80,7 @@ export default function Home({ setScreen, setLoginAudience }) {
     <AppShell className="home-shell">
       <header className="topbar">
         <button className="brand" type="button" aria-label="Página inicial Bonifácil">
-          <img className="brand-logo" src={bonifacilLogo} alt="Bonifácil" />
+          <BrandLogo />
         </button>
 
         <button className="menu-button" type="button" aria-label="Abrir menu" onClick={() => setMenuOpen(true)}>
@@ -53,7 +94,7 @@ export default function Home({ setScreen, setLoginAudience }) {
         className="hero"
         aria-label="Busca de profissionais"
         style={{
-          backgroundImage: `linear-gradient(90deg, rgba(26, 29, 24, 0.6), rgba(35, 34, 27, 0.43)), url(${heroImage})`,
+          backgroundImage: `linear-gradient(90deg, rgba(26, 29, 24, 0.5), rgba(35, 34, 27, 0.36)), url(${heroImage})`,
         }}
       >
         <div className="hero-content">
@@ -66,30 +107,32 @@ export default function Home({ setScreen, setLoginAudience }) {
         </div>
       </section>
 
-      <section className="popular">
-        <div className="section-heading">
-          <h2>Serviços Populares</h2>
-        </div>
+      {homeSections.map((section) => (
+        <section className="popular" key={section.title}>
+          <div className="section-heading">
+            <h2>{section.title}</h2>
+          </div>
 
-        <div className="service-row" aria-label="Lista de serviços populares">
-          {popularServices.map((service) => (
-            <article className="service-card" key={service.id}>
-              <img src={service.image} alt={service.alt} />
-              <h3>{service.name}</h3>
-            </article>
-          ))}
+          <div className="service-row" aria-label={`Lista de ${section.title}`}>
+            {section.items.map((service) => (
+              <article className="service-card" key={service.id}>
+                <img src={service.image} alt={service.alt} />
+                <h3>{service.name}</h3>
+              </article>
+            ))}
 
-          <button className="next-service" type="button" aria-label="Ver mais serviços" onClick={() => setScreen("categories")}>
-            <Icon name="chevronRight" />
-          </button>
-        </div>
-      </section>
+            <button className="next-service" type="button" aria-label="Ver mais serviços" onClick={() => setScreen("categories")}>
+              <Icon name="chevronRight" />
+            </button>
+          </div>
+        </section>
+      ))}
 
       {menuOpen && (
         <div className="home-menu-overlay" role="presentation" onClick={() => setMenuOpen(false)}>
           <aside className="home-menu-drawer" aria-label="Menu principal" onClick={(event) => event.stopPropagation()}>
             <header>
-              <img src={bonifacilLogo} alt="Bonifácil" />
+              <BrandLogo className="drawer-brand-logo" />
               <button type="button" aria-label="Fechar menu" onClick={() => setMenuOpen(false)}>
                 <Icon name="close" />
               </button>

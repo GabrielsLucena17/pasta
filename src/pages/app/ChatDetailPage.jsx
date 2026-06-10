@@ -3,37 +3,11 @@ import BottomNav from "../../components/BottomNav.jsx";
 import Icon from "../../components/Icon.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
-
-const messages = [
-  {
-    from: "me",
-    text: "Olá Júlio, tudo bem? Gostaria de confirmar o prazo do serviço.",
-    time: "18:18",
-  },
-  {
-    from: "other",
-    text: "Tudo bem sim, obrigado! O prazo estimado é de até 2 dias úteis, contados a partir da confirmação do pagamento.",
-    time: "18:18",
-  },
-  {
-    from: "me",
-    text: "Perfeito. Outra dúvida: o material está incluso no valor?",
-    time: "18:21",
-  },
-  {
-    from: "other",
-    text: "Nesse serviço, sim. O valor da proposta já inclui mão de obra e material.",
-    time: "18:19",
-  },
-  {
-    from: "me",
-    text: "Entendi. Obrigado pelas informações. Vou seguir para o pagamento.",
-    time: "18:22",
-  },
-];
+import { mockedChatMessages, mockedServiceOrder } from "../../data/mockOrder.js";
 
 export default function ChatDetailPage({ loginAudience, setScreen }) {
   const isProfessional = loginAudience === "professional";
+  const contact = isProfessional ? mockedServiceOrder.client : mockedServiceOrder.professional;
 
   return (
     <AppShell className="chat-shell">
@@ -41,20 +15,24 @@ export default function ChatDetailPage({ loginAudience, setScreen }) {
 
       <section className="chat-content">
         <header className="chat-contact">
-          <span className="chat-avatar">JS</span>
+          <span className="chat-avatar">{contact.initials}</span>
           <div>
-            <strong>Júlio Silva</strong>
-            <small>Pedido #15450AD4121S</small>
+            <strong>{contact.name}</strong>
+            <small>Pedido {mockedServiceOrder.code} • {mockedServiceOrder.shortProblem}</small>
           </div>
         </header>
 
-        <div className="chat-thread" aria-label="Conversa com Júlio Silva">
-          {messages.map((message, index) => (
-            <article className={`chat-message ${message.from === "me" ? "is-me" : "is-other"}`} key={`${message.time}-${index}`}>
-              <p>{message.text}</p>
-              <span>{message.time}</span>
-            </article>
-          ))}
+        <div className="chat-thread" aria-label={`Conversa com ${contact.name}`}>
+          {mockedChatMessages.map((message, index) => {
+            const isMine = isProfessional ? message.from === "professional" : message.from === "client";
+
+            return (
+              <article className={`chat-message ${isMine ? "is-me" : "is-other"}`} key={`${message.time}-${index}`}>
+                <p>{message.text}</p>
+                <span>{message.time}</span>
+              </article>
+            );
+          })}
         </div>
       </section>
 

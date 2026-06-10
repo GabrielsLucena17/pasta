@@ -9,6 +9,7 @@ import ProfessionalProfilePage from "./pages/auth/ProfessionalProfilePage.jsx";
 import ProposalDetailPage from "./pages/auth/ProposalDetailPage.jsx";
 import RegisterAccessStep from "./pages/auth/RegisterAccessStep.jsx";
 import RegisterContactStep from "./pages/auth/RegisterContactStep.jsx";
+import RegisterDocumentsStep from "./pages/auth/RegisterDocumentsStep.jsx";
 import RegisterProfileStep from "./pages/auth/RegisterProfileStep.jsx";
 import AccountPage from "./pages/app/AccountPage.jsx";
 import AddressCreatePage from "./pages/app/AddressCreatePage.jsx";
@@ -42,6 +43,7 @@ const screens = {
   registerContact: RegisterContactStep,
   registerProfile: RegisterProfileStep,
   registerAccess: RegisterAccessStep,
+  registerDocuments: RegisterDocumentsStep,
   myOrders: MyOrdersPage,
   orderDetail: OrderDetailPage,
   professionalProfile: ProfessionalProfilePage,
