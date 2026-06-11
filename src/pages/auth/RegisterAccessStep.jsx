@@ -28,7 +28,7 @@ export default function RegisterAccessStep({ auth, loginAudience, setScreen, upd
     }
 
     setError("");
-    setScreen(isProfessional ? "registerDocuments" : "loggedHome");
+    setScreen(isProfessional ? "registerDocuments" : "myOrders");
   }
 
   return (

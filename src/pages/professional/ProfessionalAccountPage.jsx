@@ -1,7 +1,7 @@
 import AppShell from "../../components/AppShell.jsx";
 import Icon from "../../components/Icon.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
-import coverImage from "../../assets/img/ds-account-cover.jpg";
+import coverImage from "../../assets/img/ds-higienizacao-sofa.jpg";
 import professionalImage from "../../assets/img/ds-eletricista.jpg";
 import watermarkLogo from "../../../DesignSystem/img/logoNewImage2.png";
 

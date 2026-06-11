@@ -60,8 +60,8 @@ export default function SummaryPage({ order, setScreen, setEditingFromSummary, s
             {order.category || "Nao selecionado"}
           </SummaryItem>
 
-          <SummaryItem label="Urgencia" onEdit={() => edit("description")}>
-            {order.urgent === null ? "Nao informado" : order.urgent ? "Sim, e urgente" : "Nao e urgente"}
+          <SummaryItem label="Urgência" onEdit={() => edit("description")}>
+            {order.urgent === null ? "Nao informado" : order.urgent ? "Sim, é urgente" : "Nao é urgente"}
           </SummaryItem>
 
           <SummaryItem label="Fotos" onEdit={() => edit("photos")}>

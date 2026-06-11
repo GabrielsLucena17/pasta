@@ -38,7 +38,7 @@ export default function ProfessionalProfilePage({ loginAudience, setScreen }) {
 
       <section className="professional-account-profile professional-public-profile">
         <h1>Ytn Profissional</h1>
-        <p><strong>4.6</strong> (5 avaliações)</p>
+        <p><strong>★ 4.6</strong> (5 avaliações)</p>
         <span>Encanador e marido de aluguel</span>
       </section>
 

@@ -27,7 +27,7 @@ export default function ServiceCreateInfoStep({ setScreen }) {
       </section>
 
       <FixedAction>
-        <PrimaryAction onClick={() => setScreen("professionalServices")}>Continuar</PrimaryAction>
+        <PrimaryAction onClick={() => setScreen("serviceCreateCover")}>Continuar</PrimaryAction>
       </FixedAction>
     </AppShell>
   );

@@ -7,9 +7,18 @@ import { mockedServiceOrder } from "../../data/mockOrder.js";
 
 const tabs = [
   { id: "open", label: "Em Aberto", count: 1 },
-  { id: "done", label: "Concluído", count: 0 },
+  { id: "done", label: "Concluído", count: 1 },
   { id: "canceled", label: "Cancelado", count: 0 },
 ];
+
+const completedOrder = {
+  id: "#12280",
+  category: "Eletricista",
+  problem: "Troca de tomada da sala",
+  date: "Finalizado ontem",
+  place: "São José dos Campos, SP",
+  image: mockedServiceOrder.photos[2].src,
+};
 
 export default function MyOrdersPage({ order, setScreen }) {
   const [activeTab, setActiveTab] = useState("open");
@@ -50,10 +59,8 @@ export default function MyOrdersPage({ order, setScreen }) {
               </span>
 
               <strong>{mockedServiceOrder.category}</strong>
-
-              <span className="order-list-place">
-                {mockedServiceOrder.location.display}
-              </span>
+              <span className="order-list-meta">{mockedServiceOrder.shortProblem}</span>
+              <span className="order-list-place">{mockedServiceOrder.location.short}</span>
             </span>
 
             <span className="order-list-arrow">
@@ -63,10 +70,21 @@ export default function MyOrdersPage({ order, setScreen }) {
         )}
 
         {activeTab === "done" && (
-          <div className="empty-orders">
-            <strong>Nenhum pedido concluído para mostrar agora</strong>
-            <p>Quando um serviço for finalizado, ele aparecerá aqui.</p>
-          </div>
+          <button className="order-list-card" type="button" onClick={() => setScreen("myOrders")}>
+            <img src={completedOrder.image} alt={completedOrder.problem} />
+            <span className="order-list-content">
+              <span className="order-list-top">
+                <small>{completedOrder.id}</small>
+                <em className="is-done">Concluído</em>
+              </span>
+              <strong>{completedOrder.category}</strong>
+              <span className="order-list-meta">{completedOrder.problem}</span>
+              <span className="order-list-place">{completedOrder.date} • {completedOrder.place}</span>
+            </span>
+            <span className="order-list-arrow">
+              <Icon name="chevronRight" />
+            </span>
+          </button>
         )}
 
         {activeTab === "canceled" && (

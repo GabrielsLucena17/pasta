@@ -28,6 +28,8 @@ import ProfessionalAccountPage from "./pages/professional/ProfessionalAccountPag
 import ProfessionalOrdersPage from "./pages/professional/ProfessionalOrdersPage.jsx";
 import ProfessionalServicesPage from "./pages/professional/ProfessionalServicesPage.jsx";
 import ProfessionalServiceDetailPage from "./pages/professional/ProfessionalServiceDetailPage.jsx";
+import ServiceCreateCoverStep from "./pages/professional/ServiceCreateCoverStep.jsx";
+import ServiceCreateDescriptionStep from "./pages/professional/ServiceCreateDescriptionStep.jsx";
 import ServiceCreateInfoStep from "./pages/professional/ServiceCreateInfoStep.jsx";
 import ServiceCreatePhotosStep from "./pages/professional/ServiceCreatePhotosStep.jsx";
 
@@ -61,6 +63,8 @@ const screens = {
   professionalServiceDetail: ProfessionalServiceDetailPage,
   serviceCreatePhotos: ServiceCreatePhotosStep,
   serviceCreateInfo: ServiceCreateInfoStep,
+  serviceCreateCover: ServiceCreateCoverStep,
+  serviceCreateDescription: ServiceCreateDescriptionStep,
   professionalAccount: ProfessionalAccountPage,
   professionalOrders: ProfessionalOrdersPage,
 };
@@ -92,6 +96,7 @@ export default function App() {
   const [order, setOrder] = useState(initialOrder);
   const [auth, setAuth] = useState(initialAuth);
   const [professionalProposal, setProfessionalProposal] = useState(null);
+  const [professionalServices, setProfessionalServices] = useState([]);
   const [orderDetailInitialTab, setOrderDetailInitialTab] = useState("details");
   const CurrentScreen = screens[screen];
 
@@ -116,6 +121,8 @@ export default function App() {
       updateAuth={updateAuth}
       professionalProposal={professionalProposal}
       setProfessionalProposal={setProfessionalProposal}
+      professionalServices={professionalServices}
+      setProfessionalServices={setProfessionalServices}
       orderDetailInitialTab={orderDetailInitialTab}
       setOrderDetailInitialTab={setOrderDetailInitialTab}
     />

@@ -1,18 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppShell from "../../components/AppShell.jsx";
-import BottomNav from "../../components/BottomNav.jsx";
 import FixedAction from "../../components/FixedAction.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
 import Icon from "../../components/Icon.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
 import { mockedServiceOrder } from "../../data/mockOrder.js";
-
-const clientProposal = {
-  startDate: mockedServiceOrder.proposal.startDate,
-  deadline: mockedServiceOrder.proposal.deadline,
-  price: mockedServiceOrder.proposal.price,
-  detail: mockedServiceOrder.proposal.detail,
-};
 
 const emptyProfessionalProposal = {
   startDate: "",
@@ -30,10 +22,17 @@ export default function ProposalDetailPage({
 }) {
   const isProfessional = loginAudience === "professional";
   const isEditing = Boolean(isProfessional && professionalProposal);
+  const [form, setForm] = useState(professionalProposal || emptyProfessionalProposal);
 
-  const [form, setForm] = useState(
-    isProfessional ? professionalProposal || emptyProfessionalProposal : clientProposal,
-  );
+  useEffect(() => {
+    if (!isProfessional) {
+      setScreen("orderDetail");
+    }
+  }, [isProfessional, setScreen]);
+
+  if (!isProfessional) {
+    return null;
+  }
 
   function handleChange(field, value) {
     setForm((prev) => ({
@@ -57,10 +56,10 @@ export default function ProposalDetailPage({
   }
 
   return (
-    <AppShell className={`step-shell proposal-detail-shell ${isProfessional ? "professional-proposal-detail-shell" : ""}`}>
+    <AppShell className="step-shell proposal-detail-shell professional-proposal-detail-shell">
       <StepHeader
         className="proposal-detail-topbar"
-        title={isProfessional ? (isEditing ? "Editar proposta" : "Criar proposta") : "Proposta"}
+        title={isEditing ? "Editar proposta" : "Criar proposta"}
         showProgress={false}
         onBack={() => setScreen("orderDetail")}
       />
@@ -72,7 +71,6 @@ export default function ProposalDetailPage({
             <input
               type="date"
               value={form.startDate}
-              readOnly={!isProfessional}
               onChange={(event) => handleChange("startDate", event.target.value)}
             />
             <Icon name="calendar" />
@@ -85,7 +83,6 @@ export default function ProposalDetailPage({
             <input
               type="date"
               value={form.deadline}
-              readOnly={!isProfessional}
               onChange={(event) => handleChange("deadline", event.target.value)}
             />
             <Icon name="calendar" />
@@ -97,7 +94,6 @@ export default function ProposalDetailPage({
           <input
             type="text"
             value={form.price}
-            readOnly={!isProfessional}
             onChange={(event) => handleChange("price", event.target.value)}
             placeholder="Ex: R$ 380,00"
           />
@@ -107,46 +103,20 @@ export default function ProposalDetailPage({
           <span>Detalhe</span>
           <textarea
             value={form.detail}
-            readOnly={!isProfessional}
             maxLength={300}
             onChange={(event) => handleChange("detail", event.target.value)}
             placeholder="Descreva o que está incluso na proposta"
           />
           <small>{form.detail.length}/300</small>
         </label>
-
-        {!isProfessional && (
-          <div className="proposal-actions">
-            <button className="accept" type="button" onClick={() => setScreen("payment")}>
-              Aceitar proposta
-              <Icon name="chevronRight" />
-            </button>
-
-            <button className="chat" type="button" onClick={() => setScreen("chatDetail")}>
-              Conversar com profissional
-              <Icon name="chevronRight" />
-            </button>
-
-            <button className="reject" type="button" onClick={() => setScreen("orderDetail")}>
-              Recusar proposta
-              <Icon name="chevronRight" />
-            </button>
-          </div>
-        )}
       </section>
 
-      {isProfessional ? (
-        <>
-          <FixedAction className="proposal-fixed-action">
-            <button className="primary-action" type="button" onClick={handleSaveProposal}>
-              {isEditing ? "Salvar alterações" : "Criar proposta"}
-            </button>
-          </FixedAction>
-          <ProfessionalBottomNav active="professionalOrders" setScreen={setScreen} />
-        </>
-      ) : (
-        <BottomNav active="myOrders" setScreen={setScreen} />
-      )}
+      <FixedAction className="proposal-fixed-action professional-proposal-fixed-action">
+        <button className="primary-action" type="button" onClick={handleSaveProposal}>
+          {isEditing ? "Salvar alterações" : "Criar proposta"}
+        </button>
+      </FixedAction>
+      <ProfessionalBottomNav active="professionalOrders" setScreen={setScreen} />
     </AppShell>
   );
 }

@@ -18,7 +18,7 @@ export default function ChatDetailPage({ loginAudience, setScreen }) {
           <span className="chat-avatar">{contact.initials}</span>
           <div>
             <strong>{contact.name}</strong>
-            <small>Pedido {mockedServiceOrder.code} • {mockedServiceOrder.shortProblem}</small>
+            <small>Pedido {mockedServiceOrder.code}</small>
           </div>
         </header>
 

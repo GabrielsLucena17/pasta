@@ -1,11 +1,13 @@
 import { useMemo, useRef, useState } from "react";
 import AppShell from "../../components/AppShell.jsx";
 import BrandLogo from "../../components/BrandLogo.jsx";
+import BrandLogoOnlyImage from "../../components/BrandLogoOnlyImage.jsx";
 import BottomNav from "../../components/BottomNav.jsx";
 import Icon from "../../components/Icon.jsx";
 import ProfessionalBottomNav from "../../components/ProfessionalBottomNav.jsx";
 import StepHeader from "../../components/StepHeader.jsx";
 import { mockedServiceOrder } from "../../data/mockOrder.js";
+import secondProfessionalImage from "../../assets/img/service-plumber.jpg";
 
 const gallery = mockedServiceOrder.photos;
 
@@ -16,14 +18,63 @@ const clientProposal = {
   bio: mockedServiceOrder.professional.bio,
   services: mockedServiceOrder.professional.services,
   price: mockedServiceOrder.proposal.price,
-  deadline: mockedServiceOrder.proposal.deadlineLabel,
+  deadline: mockedServiceOrder.proposal.deadline,
   startDate: mockedServiceOrder.proposal.startDate,
+  detail: mockedServiceOrder.proposal.detail,
   image: mockedServiceOrder.professional.image,
 };
+
+const secondClientProposal = {
+  professional: "Hidro Vale Reparos",
+  rating: "4.7",
+  reviews: "(12)",
+  bio: "Especialista em vazamentos, torneiras e sifões de cozinha",
+  services: "Reparo hidráulico residencial e troca de peças simples",
+  price: "R$ 420,00",
+  deadline: "2026-05-19",
+  startDate: "2026-05-18",
+  detail:
+    "Inclui visita técnica, identificação do ponto de vazamento, troca de vedação simples se necessário e teste de funcionamento da torneira e do sifão.",
+  image: secondProfessionalImage,
+};
+
+function formatDate(value) {
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("pt-BR").format(date);
+}
 
 function isStartCodeStatus(status) {
   const key = status.toLowerCase();
   return key.includes("codigo") || key.includes("código");
+}
+
+function getStatusHelper(status, isProfessional) {
+  const key = status.toLowerCase();
+
+  if (key.includes("aguardando profissional")) {
+    return isProfessional
+      ? "O cliente já confirmou a proposta. Combine o início do serviço."
+      : "A proposta foi aceita. Aguarde o profissional confirmar o início do serviço.";
+  }
+
+  if (key.includes("código") || key.includes("codigo")) {
+    return "A proposta foi aceita. Confirme o código com o cliente para iniciar.";
+  }
+
+  if (key.includes("iniciado") || key.includes("andamento")) {
+    return isProfessional
+      ? "O serviço está em andamento. Finalize somente após concluir o reparo."
+      : "O profissional já iniciou o serviço.";
+  }
+
+  if (key.includes("finalizado")) {
+    return "Serviço concluído.";
+  }
+
+  return isProfessional
+    ? "Pedido disponível para envio de proposta."
+    : "Profissionais da região podem enviar propostas.";
 }
 
 export default function OrderDetailPage({
@@ -46,12 +97,17 @@ export default function OrderDetailPage({
   const acceptedService = isProfessional && (needsStartCode || serviceStarted || currentStatusKey.includes("finalizado"));
   const [activeTab, setActiveTab] = useState(acceptedService ? "details" : isProfessional ? orderDetailInitialTab : "details");
   const [activePhoto, setActivePhoto] = useState(0);
+  const [activeProposalIndex, setActiveProposalIndex] = useState(0);
   const [startCode, setStartCode] = useState("");
   const [startCodeError, setStartCodeError] = useState("");
   const dragState = useRef({ isDragging: false, startX: 0, scrollLeft: 0 });
   const codeInputRefs = useRef([]);
-  const visibleProposal = isProfessional ? professionalProposal : clientProposal;
-  const proposalCount = visibleProposal ? 1 : 0;
+  const proposalItems = isProfessional
+    ? professionalProposal ? [professionalProposal] : []
+    : [clientProposal, secondClientProposal];
+  const proposalCount = proposalItems.length;
+  const activeProposal = proposalItems[activeProposalIndex] || proposalItems[0];
+  const visibleProposal = proposalItems[0];
   const descriptionLimit = 110;
   const [showFullDescription, setShowFullDescription] = useState(false);
 
@@ -91,6 +147,14 @@ export default function OrderDetailPage({
   function openProposalEditor() {
     setOrderDetailInitialTab?.("proposals");
     setScreen("proposalDetail");
+  }
+
+  function goToPreviousProposal() {
+    setActiveProposalIndex((index) => Math.max(0, index - 1));
+  }
+
+  function goToNextProposal() {
+    setActiveProposalIndex((index) => Math.min(proposalCount - 1, index + 1));
   }
 
   function handleGalleryScroll(event) {
@@ -222,12 +286,13 @@ export default function OrderDetailPage({
 
           {serviceStarted && (
             <section className="professional-service-started">
-              <figure>
-                <BrandLogo className="service-started-logo" />
-              </figure>
-              <div>
-                <strong>Serviço iniciado</strong>
-                <p>O serviço já está em andamento. Finalize somente após concluir o serviço com o cliente.</p>
+              <div className="document-preview">
+                <BrandLogoOnlyImage className="service-started-logo" />
+                <br />
+                <div>
+                  <strong>Serviço iniciado</strong>
+                  <p>O serviço já está em andamento. Finalize somente após concluir o serviço com o cliente.</p>
+                </div>
               </div>
               <button type="button" onClick={finishService}>
                 Finalizar serviço
@@ -273,7 +338,7 @@ export default function OrderDetailPage({
                 <Icon name="hourglass" />
                 <span>
                   <strong>{currentStatus}</strong>
-                  <small>{acceptedService ? "A proposta foi aceita. Confirme o código com o cliente para iniciar." : "Profissionais da região podem enviar propostas."}</small>
+                  <small>{getStatusHelper(currentStatus, isProfessional)}</small>
                 </span>
               </span>
             </div>
@@ -357,7 +422,81 @@ export default function OrderDetailPage({
         </section>
       )}
 
-      {!acceptedService && activeTab === "proposals" && (
+      {!isProfessional && !acceptedService && activeTab === "proposals" && (
+        <section className="order-detail-content proposal-content client-proposals-content">
+          {!activeProposal ? (
+            <div className="empty-proposals">
+              <strong>Ainda não há propostas para este pedido.</strong>
+              <p>Assim que um profissional enviar uma proposta, ela aparecerá aqui.</p>
+            </div>
+          ) : (
+            <div className="proposal-carousel-shell">
+              <div className="proposal-carousel-header">
+                <button type="button" onClick={goToPreviousProposal} disabled={activeProposalIndex === 0}>
+                  <Icon name="chevronLeft" />
+                  Anterior
+                </button>
+                <span>{activeProposalIndex + 1} de {proposalCount}</span>
+                <button type="button" onClick={goToNextProposal} disabled={activeProposalIndex >= proposalCount - 1}>
+                  Próxima
+                  <Icon name="chevronRight" />
+                </button>
+              </div>
+
+              <article className="proposal-view-card proposal-carousel-card">
+                <button className="proposal-view-professional" type="button" onClick={() => setScreen("professionalProfile")}>
+                  <img src={activeProposal.image} alt={activeProposal.professional} />
+                  <span>
+                    <strong>{activeProposal.professional}</strong>
+                    <em>{activeProposal.rating} {activeProposal.reviews}</em>
+                    <small>{activeProposal.bio}</small>
+                  </span>
+                </button>
+
+                <dl>
+                  <div>
+                    <dt>Valor</dt>
+                    <dd>{activeProposal.price}</dd>
+                  </div>
+                  <div>
+                    <dt>Início</dt>
+                    <dd>{formatDate(activeProposal.startDate)}</dd>
+                  </div>
+                  <div>
+                    <dt>Conclusão prevista</dt>
+                    <dd>{formatDate(activeProposal.deadline)}</dd>
+                  </div>
+                </dl>
+
+                <section>
+                  <h2>Detalhes da proposta</h2>
+                  <p>{activeProposal.detail}</p>
+                </section>
+              </article>
+
+              <div className="proposal-carousel-dots" aria-hidden="true">
+                {proposalItems.map((proposal, index) => (
+                  <i className={index === activeProposalIndex ? "is-active" : ""} key={`${proposal.professional}-${index}`} />
+                ))}
+              </div>
+
+              <div className="proposal-carousel-actions">
+                <button className="primary-action" type="button" onClick={() => setScreen("payment")}>
+                  Aceitar proposta
+                </button>
+                <button className="proposal-secondary-action" type="button" onClick={() => setScreen("chatDetail")}>
+                  Conversar com profissional
+                </button>
+                <button className="proposal-danger-action" type="button" onClick={() => setScreen("orderDetail")}>
+                  Recusar proposta
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {isProfessional && !acceptedService && activeTab === "proposals" && (
         <section className="order-detail-content proposal-content">
           {!visibleProposal ? (
             <div>

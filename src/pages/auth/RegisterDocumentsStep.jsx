@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AppShell from "../../components/AppShell.jsx";
 import FixedAction from "../../components/FixedAction.jsx";
 import Icon from "../../components/Icon.jsx";
@@ -10,40 +10,76 @@ import selfieImage from "../../../DesignSystem/img/uploadDocs/selfie.png";
 
 const docSteps = [
   {
+    id: "front",
     title: "Frente do documento",
     image: documentFront,
-    alt: "Ilustracao da frente do documento",
+    alt: "Ilustração da frente do documento",
   },
   {
-    title: "Tras do documento",
+    id: "back",
+    title: "Verso do documento",
     image: documentBack,
-    alt: "Ilustracao do verso do documento",
+    alt: "Ilustração do verso do documento",
   },
   {
+    id: "selfie",
     title: "Selfie / Foto do rosto",
     image: selfieImage,
-    alt: "Ilustracao de selfie para validacao",
+    alt: "Ilustração de selfie para validação",
   },
 ];
 
 const tips = [
-  "Use uma boa iluminacao",
+  "Use uma boa iluminação",
   "Enquadre o documento inteiro",
   "Evite reflexos e sombras",
-  "Mantenha a foto nitida",
+  "Mantenha a foto nítida",
 ];
 
 export default function RegisterDocumentsStep({ setScreen }) {
+  const inputRef = useRef(null);
   const [currentDocStep, setCurrentDocStep] = useState(0);
+  const [uploads, setUploads] = useState({});
+  const [error, setError] = useState("");
   const current = docSteps[currentDocStep];
+  const currentUpload = uploads[current.id];
 
-  function continueDocumentFlow() {
-    if (currentDocStep < docSteps.length - 1) {
-      setCurrentDocStep((step) => step + 1);
+  function handleUpload(event) {
+    const file = event.target.files?.[0];
+
+    if (!file || !file.type.startsWith("image/")) {
       return;
     }
 
-    setScreen("professionalAccount");
+    if (currentUpload?.url) {
+      URL.revokeObjectURL(currentUpload.url);
+    }
+
+    setUploads((items) => ({
+      ...items,
+      [current.id]: {
+        name: file.name,
+        url: URL.createObjectURL(file),
+      },
+    }));
+    setError("");
+
+    event.target.value = "";
+  }
+
+  function continueDocumentFlow() {
+    if (!currentUpload) {
+      setError(`Envie a foto solicitada: ${current.title.toLowerCase()}.`);
+      return;
+    }
+
+    if (currentDocStep < docSteps.length - 1) {
+      setCurrentDocStep((step) => step + 1);
+      setError("");
+      return;
+    }
+
+    setScreen("professionalOrders");
   }
 
   function goBack() {
@@ -63,9 +99,27 @@ export default function RegisterDocumentsStep({ setScreen }) {
         <h1>Precisamos da confirmação de seu documento</h1>
         <p>Siga as orientações para validação da sua conta</p>
 
+        {error && <p className="field-error document-error">{error}</p>}
+
         <div className="document-preview">
-          <strong>{current.title}</strong>
+
+          {current.title && <h2>{current.title}</h2>}
+
           <img src={current.image} alt={current.alt} />
+
+          {currentUpload && (
+            <figure className="document-upload-preview">
+              <img src={currentUpload.url} alt={`Upload de ${current.title}`} />
+              <figcaption>{currentUpload.name}</figcaption>
+            </figure>
+          )}
+
+          <button className="document-upload-button" type="button" onClick={() => inputRef.current?.click()}>
+            <Icon name="camera" />
+            {currentUpload ? "Trocar foto" : "Adicionar foto"}
+          </button>
+
+          <input ref={inputRef} className="document-upload-input" type="file" accept="image/*" onChange={handleUpload} />
         </div>
 
         <ul className="document-tips">

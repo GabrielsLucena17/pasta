@@ -10,6 +10,7 @@ const icons = {
   camera: "material-symbols:photo-camera-outline-rounded",
   cancel: "material-symbols:cancel-rounded",
   check: "material-symbols:check-rounded",
+  chevronLeft: "material-symbols:chevron-left-rounded",
   chevronRight: "material-symbols:chevron-right-rounded",
   clock: "material-symbols:schedule-rounded",
   close: "material-symbols:close-rounded",

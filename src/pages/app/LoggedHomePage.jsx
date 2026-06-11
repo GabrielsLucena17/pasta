@@ -1,3 +1,4 @@
+import { useState } from "react";
 import blogImage from "../../assets/img/ds-blog-home-care.jpg";
 import AppShell from "../../components/AppShell.jsx";
 import BottomNav from "../../components/BottomNav.jsx";
@@ -19,6 +20,12 @@ const houseServices = [
   { name: "Desentupidor", image: serviceImages.desentupidor },
 ];
 
+const savedAddresses = [
+  "Av. Martins Guimarães, 123",
+  "Rua das Palmeiras, 45",
+  "Vila Tesouro - São José dos Campos",
+];
+
 function ServiceScroller({ title, items, setScreen }) {
   return (
     <section className="logged-section">
@@ -37,15 +44,39 @@ function ServiceScroller({ title, items, setScreen }) {
 
 export default function LoggedHomePage({ auth, order, setScreen }) {
   const firstName = auth.fullName?.trim().split(" ")[0] || "Fulano";
-  const address = order.address?.street || "Av. Martins Guimarães ...";
+  const initialAddress = order.address?.street || savedAddresses[0];
+  const [selectedAddress, setSelectedAddress] = useState(initialAddress);
+  const [addressOpen, setAddressOpen] = useState(false);
 
   return (
     <AppShell className="logged-shell">
       <header className="logged-header">
-        <button className="address-select" type="button">
-          <span>{address}</span>
-          <Icon name="arrowDown" />
-        </button>
+        <div className="logged-address-wrap">
+          <button className="address-select" type="button" onClick={() => setAddressOpen((open) => !open)}>
+            <span>{selectedAddress}</span>
+            <Icon name="arrowDown" />
+          </button>
+
+          {addressOpen && (
+            <div className="address-select-menu">
+              {savedAddresses.map((address) => (
+                <button
+                  type="button"
+                  key={address}
+                  onClick={() => {
+                    setSelectedAddress(address);
+                    setAddressOpen(false);
+                  }}
+                >
+                  {address}
+                </button>
+              ))}
+              <button type="button" onClick={() => setScreen("addresses")}>
+                Gerenciar endereços
+              </button>
+            </div>
+          )}
+        </div>
 
         <button className="notification-button" type="button" aria-label="Abrir notificações" onClick={() => setScreen("notifications")}>
           <Icon name="bell" />
@@ -59,7 +90,7 @@ export default function LoggedHomePage({ auth, order, setScreen }) {
         <button type="button" onClick={() => setScreen("categories")}>Buscar</button>
       </section>
 
-      <ServiceScroller title="Serviços populares" items={homeServices} setScreen={setScreen} />
+      <ServiceScroller title="Serviços Populares" items={homeServices} setScreen={setScreen} />
       <ServiceScroller title="Melhoria da Casa" items={houseServices} setScreen={setScreen} />
 
       <section className="logged-section blog-section">
